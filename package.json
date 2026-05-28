@@ -1,0 +1,1 @@
+{"name": "Solar Mask", "version": "1.0.0", "description": "Computes the real sun visibility for any location on your property.", "license": "MIT", "repository": {"type": "git", "url": "https://github.com/38decibel/Solar-Mask"}, "bugs": {"url": "https://github.com/38decibel/Solar-Mask/issues"}, "keywords": ["sun", "tracker", "home-assistant"]}

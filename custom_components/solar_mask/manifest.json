@@ -1,0 +1,10 @@
+{
+  "domain": "solar_mask",
+  "name": "Solar Mask",
+  "documentation": "https://github.com/38decibel/Solar-Mask",
+  "issue_tracker": "https://github.com/38decibel/Solar-Mask/issues",
+  "version": "1.0.0",
+  "requirements": [],
+  "codeowners": ["@38decibel"],
+  "iot_class": "calculated"
+}
