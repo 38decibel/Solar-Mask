@@ -60,7 +60,7 @@ windows:
 
 ### Via HACS (recommended)
 
-1. In HACS, go to **Integrations** → **Custom repositories**
+1. In HACS, next to the search bar, click on the three dots → **Custom repositories**
 2. Add `https://github.com/38decibel/Solar-Mask` with category **Integration**
 3. Install **Solar Mask**
 4. Restart Home Assistant
