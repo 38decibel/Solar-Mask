@@ -10,6 +10,7 @@ from pathlib import Path
 
 import voluptuous as vol
 from homeassistant.const import Platform
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.discovery import async_load_platform
@@ -30,6 +31,17 @@ ZONE_SCHEMA = vol.Schema({
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.All(cv.ensure_list, [ZONE_SCHEMA])
 }, extra=vol.ALLOW_EXTRA)
+
+
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Set up a zone configured through the Home Assistant UI."""
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Unload a configured zone."""
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:

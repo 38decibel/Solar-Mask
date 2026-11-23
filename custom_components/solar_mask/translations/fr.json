@@ -1,0 +1,23 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ajouter une zone Solar Mask",
+        "description": "Saisissez un nom et collez les données de l'horizon au format CSV ou sous forme de paires azimut/élévation séparées par des espaces. Exemple : {mask_example}. Les coordonnées par défaut sont celles de Home Assistant.",
+        "data": {
+          "name": "Nom de la zone",
+          "mask_data": "Données de l'horizon",
+          "latitude": "Latitude",
+          "longitude": "Longitude"
+        }
+      }
+    },
+    "error": {
+      "invalid_name": "Saisissez un nom de zone.",
+      "invalid_mask": "Saisissez des données valides contenant au moins une paire azimut/élévation."
+    },
+    "abort": {
+      "already_configured": "Une zone portant ce nom est déjà configurée."
+    }
+  }
+}

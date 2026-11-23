@@ -1,0 +1,23 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add a Solar Mask zone",
+        "description": "Enter a name and paste the horizon data as CSV or space-separated azimuth/elevation pairs. Example: {mask_example}. Coordinates default to your Home Assistant location.",
+        "data": {
+          "name": "Zone name",
+          "mask_data": "Horizon mask data",
+          "latitude": "Latitude",
+          "longitude": "Longitude"
+        }
+      }
+    },
+    "error": {
+      "invalid_name": "Enter a zone name.",
+      "invalid_mask": "Enter valid horizon data with at least one azimuth/elevation pair."
+    },
+    "abort": {
+      "already_configured": "A zone with this name is already configured."
+    }
+  }
+}

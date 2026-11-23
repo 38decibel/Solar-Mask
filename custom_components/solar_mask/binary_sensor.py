@@ -15,12 +15,15 @@ from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.event import async_track_time_interval
 
 from .const import (
     DOMAIN,
+    CONF_NAME,
     CONF_MASK_FILE,
+    CONF_MASK_DATA,
     CONF_LATITUDE,
     CONF_LONGITUDE,
     ATTR_EFFECTIVE_ELEVATION,
@@ -39,13 +42,28 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     if DOMAIN not in hass.data:
         return
 
+    await _async_add_zone_entities(
+        hass, hass.data[DOMAIN].items(), async_add_entities
+    )
+
+
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
+    """Set up a binary sensor for a UI-configured zone."""
+    await _async_add_zone_entities(
+        hass, [(entry.data[CONF_NAME], entry.data)], async_add_entities
+    )
+
+
+async def _async_add_zone_entities(hass, zones, async_add_entities):
+    """Create binary sensor entities for the supplied zones."""
     entities = []
-    for zone_name, zone_cfg in hass.data[DOMAIN].items():
+    for zone_name, zone_cfg in zones:
         mask = SolarMask(
-            mask_file=zone_cfg[CONF_MASK_FILE],
+            mask_file=zone_cfg.get(CONF_MASK_FILE),
             latitude=zone_cfg[CONF_LATITUDE],
             longitude=zone_cfg[CONF_LONGITUDE],
             name=zone_name,
+            mask_data=zone_cfg.get(CONF_MASK_DATA),
         )
         # Blocking file I/O → executor
         await hass.async_add_executor_job(mask.load)

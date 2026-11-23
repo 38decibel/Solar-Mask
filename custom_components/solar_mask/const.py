@@ -5,6 +5,7 @@ DOMAIN = "solar_mask"
 CONF_ZONES = "zones"
 CONF_NAME = "name"
 CONF_MASK_FILE = "mask_file"
+CONF_MASK_DATA = "mask_data"
 CONF_LATITUDE = "latitude"
 CONF_LONGITUDE = "longitude"
 
