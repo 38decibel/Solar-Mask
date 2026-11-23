@@ -22,6 +22,7 @@ Solar Mask lets you define that horizon — using a dedicated webapp **Solar Mas
 - 🔄 **Fully offline** — pure Python astronomy, zero external dependencies
 - 🗂️ **Multi-zone support** — configure as many zones as you need (pool, terrace, vegetable garden…)
 - 📡 **6 entities per zone** — binary sensor + 5 sensors, ready to use in automations and dashboards
+- 📊 **Bundled dashboard card** — Solar Mask Card is included and loaded automatically
 - 📁 **Standard mask formats** — CSV (Solar Mask Generator) and HOR (PVGIS / PVsyst) are both supported
 
 ## Entities
@@ -168,7 +169,7 @@ Lines beginning with `#` are treated as comments. Both space-separated and comma
 
 ### Dashboard card
 
-Pair Solar Mask with the associated custom card [Solar Mask Card](https://github.com/38decibel/Solar-Mask-Card) for a visual solar diagram showing the sun's path over your horizon mask directly in your Lovelace dashboard.
+The [Solar Mask Card](https://github.com/38decibel/Solar-Mask-Card) is bundled with this integration and loaded automatically. You do not need to install a separate HACS repository or add a Lovelace resource. After installing Solar Mask, add a **Manual card** to your dashboard:
 
 ```yaml
 type: custom:solar-mask-card

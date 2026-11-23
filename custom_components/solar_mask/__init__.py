@@ -9,6 +9,8 @@ import logging
 from pathlib import Path
 
 import voluptuous as vol
+from homeassistant.components.frontend import add_extra_js_url
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.const import Platform
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -20,6 +22,7 @@ from .const import DOMAIN, CONF_ZONES, CONF_NAME, CONF_MASK_FILE, CONF_LATITUDE,
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
+CARD_URL = "/solar_mask/solar-mask-card.js"
 
 ZONE_SCHEMA = vol.Schema({
     vol.Required(CONF_NAME): cv.string,
@@ -45,7 +48,18 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Set up the Solar Mask integration from configuration.yaml."""
+    """Set up Solar Mask and register its dashboard card."""
+    await hass.http.async_register_static_paths(
+        [
+            StaticPathConfig(
+                CARD_URL,
+                str(Path(__file__).parent / "www" / "solar-mask-card.js"),
+                cache_headers=False,
+            )
+        ]
+    )
+    add_extra_js_url(hass, CARD_URL)
+
     if DOMAIN not in config:
         return True
 
