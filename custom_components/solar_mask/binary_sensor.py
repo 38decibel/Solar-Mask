@@ -32,6 +32,7 @@ from .const import (
     ATTR_MASK_ELEVATION,
     UPDATE_INTERVAL,
 )
+from .device import solar_mask_device_info
 from .solar_engine import SolarMask
 
 _LOGGER = logging.getLogger(__name__)
@@ -81,6 +82,7 @@ class SolarMaskBinarySensor(BinarySensorEntity):
     def __init__(self, hass: HomeAssistant, zone_name: str, mask: SolarMask):
         self._zone_name = zone_name
         self._mask = mask
+        self._attr_device_info = solar_mask_device_info(zone_name)
         self._attr_name = f"{zone_name} sunlit"
         self._attr_unique_id = f"solar_mask_{zone_name}_sunlit"
         self._attr_is_on = False

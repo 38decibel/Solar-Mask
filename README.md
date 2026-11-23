@@ -86,6 +86,7 @@ azimuth,elevation
 ```
 
 Add the integration again to set up additional zones.
+Each zone appears as a device containing its six Solar Mask entities.
 
 ### YAML (legacy)
 

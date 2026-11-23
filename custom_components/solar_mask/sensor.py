@@ -33,6 +33,7 @@ from .const import (
     CONF_LONGITUDE,
     UPDATE_INTERVAL,
 )
+from .device import solar_mask_device_info
 from .solar_engine import SolarMask
 
 _LOGGER = logging.getLogger(__name__)
@@ -111,6 +112,7 @@ class _BaseSolarSensor(SensorEntity):
         self._zone_name = zone_name
         self._mask = mask
         self._hass = hass
+        self._attr_device_info = solar_mask_device_info(zone_name)
 
     async def async_added_to_hass(self):
         await self._async_do_update()
