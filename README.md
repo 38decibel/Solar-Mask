@@ -1,5 +1,5 @@
 [![Stable](https://img.shields.io/github/release/38decibel/solar-mask/all.svg?style=plastic&label=Current%20release)](https://github.com/38decibel/Solar-Mask)
-[![HACS Supported](https://img.shields.io/badge/HACS-Custom-orange.svg?style=plastic)](https://github.com/hacs/integration) [![Downloads](https://img.shields.io/github/downloads/38decibel/solar-mask/total?style=plastic&label=Total%20downloads)](https://github.com/38decibel/Solar-Mask)
+[![Marketplace](https://img.shields.io/badge/Marketplace-Custom-orange.svg?style=plastic)](https://www.home-assistant.io/integrations/marketplace) [![Downloads](https://img.shields.io/github/downloads/38decibel/solar-mask/total?style=plastic&label=Total%20downloads)](https://github.com/38decibel/Solar-Mask)
 
 # 🌞 Solar Mask — Home Assistant custom integration
 
@@ -59,12 +59,16 @@ windows:
 
 ## Installation
 
-### Via HACS (recommended)
+### Marketplace (recommended)
 
-1. In HACS, next to the search bar, click on the three dots → **Custom repositories**
-2. Add `https://github.com/38decibel/Solar-Mask` with category **Integration**
-3. Install **Solar Mask**
-4. Restart Home Assistant
+1. Go to **Settings > Marketplace**.
+2. In the upper-right corner, select **Add from link**.
+3. Add `https://github.com/38decibel/Solar-Mask` under **GitHub link**.
+4. Select **Add**.
+5. Search for **Solar Mask** in the Marketplace and install it.
+
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=38decibel&repository=Solar-Mask&category=integration)
+
 
 ### Manual
 
