@@ -1,5 +1,5 @@
 [![Stable](https://img.shields.io/github/release/38decibel/solar-mask/all.svg?style=plastic&label=Current%20release)](https://github.com/38decibel/Solar-Mask)
-[![HACS Supported](https://img.shields.io/badge/HACS-Custom-orange.svg?style=plastic)](https://github.com/hacs/integration) [![Downloads](https://img.shields.io/github/downloads/38decibel/solar-mask/total?style=plastic&label=Total%20downloads)](https://github.com/38decibel/Solar-Mask)
+[![Marketplace](https://img.shields.io/badge/Marketplace-Custom-orange.svg?style=plastic)](https://www.home-assistant.io/integrations/marketplace) [![Downloads](https://img.shields.io/github/downloads/38decibel/solar-mask/total?style=plastic&label=Total%20downloads)](https://github.com/38decibel/Solar-Mask)
 
 # 🌞 Solar Mask — Home Assistant custom integration
 
@@ -22,6 +22,7 @@ Solar Mask lets you define that horizon — using a dedicated webapp **Solar Mas
 - 🔄 **Fully offline** — pure Python astronomy, zero external dependencies
 - 🗂️ **Multi-zone support** — configure as many zones as you need (pool, terrace, vegetable garden…)
 - 📡 **6 entities per zone** — binary sensor + 5 sensors, ready to use in automations and dashboards
+- 📊 **Bundled dashboard card** — Solar Mask Card is included and loaded automatically
 - 📁 **Standard mask formats** — CSV (Solar Mask Generator) and HOR (PVGIS / PVsyst) are both supported
 
 ## Entities
@@ -58,12 +59,16 @@ windows:
 
 ## Installation
 
-### Via HACS (recommended)
+### Marketplace (recommended)
 
-1. In HACS, next to the search bar, click on the three dots → **Custom repositories**
-2. Add `https://github.com/38decibel/Solar-Mask` with category **Integration**
-3. Install **Solar Mask**
-4. Restart Home Assistant
+1. Go to **Settings > Marketplace**.
+2. In the upper-right corner, select **Add from link**.
+3. Add `https://github.com/38decibel/Solar-Mask` under **GitHub link**.
+4. Select **Add**.
+5. Search for **Solar Mask** in the Marketplace and install it.
+
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=38decibel&repository=Solar-Mask&category=integration)
+
 
 ### Manual
 
@@ -72,7 +77,25 @@ windows:
 
 ## Configuration
 
-Add the following to your `configuration.yaml`:
+### Home Assistant UI (recommended)
+
+After installation and restart, go to **Settings → Devices & services → Add integration** and search for **Solar Mask**. Add one zone at a time by entering its name and pasting its horizon data into the form. CSV and space-separated HOR data are accepted, so no local mask file is needed. Latitude and longitude default to your Home Assistant location; enter overrides if this zone is elsewhere.
+
+For example, paste:
+
+```csv
+azimuth,elevation
+0,3.5
+30,5.2
+60,12.0
+```
+
+Add the integration again to set up additional zones.
+Each zone appears as a device containing its six Solar Mask entities.
+
+### YAML (legacy)
+
+You can still configure zones in `configuration.yaml` if preferred:
 
 ```yaml
 solar_mask:
@@ -92,7 +115,7 @@ solar_mask:
 | `latitude` | ❌ | Override latitude for this zone (defaults to HA location) |
 | `longitude` | ❌ | Override longitude for this zone (defaults to HA location) |
 
-Restart Home Assistant after any configuration change (but before make sur to had store the csv files)
+Restart Home Assistant after changing the legacy YAML configuration.
 
 ## How to create a mask file
 
@@ -105,7 +128,7 @@ A mask file describes the horizon around your zone as a series of **(azimuth, el
 1. Go to [**Solar Mask Generator**](https://38decibel.github.io/Solar-Mask-Generator)
 2. Stand at the location you want to measure (pool edge, terrace, etc.)
 3. Slowly pan your phone around 360°, tapping to record horizon points wherever the skyline changes (building edge, treetop, hill)
-4. Export the data as **CSV** — the file is ready to use directly with Solar Mask
+4. Export the data as **CSV** and paste its azimuth/elevation rows into the Solar Mask setup form.
 
 > **Tip:** Take measurements on a clear day. Aim for at least one point every 10–15° for a smooth mask, and more points in areas with complex obstacles.
 
@@ -115,8 +138,8 @@ The European Commission's **PVGIS** tool provides a satellite-derived horizon pr
 
 1. Go to [https://re.jrc.ec.europa.eu/pvg_tools/en/tools.html](https://re.jrc.ec.europa.eu/pvg_tools/en/tools.html)
 2. Check "Calculated horizon"
-3. Click **Csv** — this gives you a `.csv` file
-4. Delete all unnecessary datas (keep only 'A' & 'H_hor' columns).
+3. Click **Csv** and copy the azimuth and horizon elevation data into the Solar Mask setup form.
+4. Keep only the azimuth and horizon elevation columns.
 
 > **Note:** PVGIS horizon data reflects the far-field topography (hills, mountains) but does not include nearby obstacles like buildings or trees. It is a useful starting point but should be combined with on-site measurements for best accuracy.
 
@@ -150,7 +173,7 @@ Lines beginning with `#` are treated as comments. Both space-separated and comma
 
 ### Dashboard card
 
-Pair Solar Mask with the associated custom card [Solar Mask Card](https://github.com/38decibel/Solar-Mask-Card) for a visual solar diagram showing the sun's path over your horizon mask directly in your Lovelace dashboard.
+The [Solar Mask Card](https://github.com/38decibel/Solar-Mask-Card) is bundled with this integration and loaded automatically. You do not need to install a separate HACS repository or add a Lovelace resource. After installing Solar Mask, add a **Manual card** to your dashboard:
 
 ```yaml
 type: custom:solar-mask-card

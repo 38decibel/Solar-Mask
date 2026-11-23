@@ -9,7 +9,10 @@ import logging
 from pathlib import Path
 
 import voluptuous as vol
+from homeassistant.components.frontend import add_extra_js_url
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.const import Platform
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.discovery import async_load_platform
@@ -19,6 +22,7 @@ from .const import DOMAIN, CONF_ZONES, CONF_NAME, CONF_MASK_FILE, CONF_LATITUDE,
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
+CARD_URL = "/solar_mask/solar-mask-card.js"
 
 ZONE_SCHEMA = vol.Schema({
     vol.Required(CONF_NAME): cv.string,
@@ -32,8 +36,30 @@ CONFIG_SCHEMA = vol.Schema({
 }, extra=vol.ALLOW_EXTRA)
 
 
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Set up a zone configured through the Home Assistant UI."""
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Unload a configured zone."""
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+
+
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Set up the Solar Mask integration from configuration.yaml."""
+    """Set up Solar Mask and register its dashboard card."""
+    await hass.http.async_register_static_paths(
+        [
+            StaticPathConfig(
+                CARD_URL,
+                str(Path(__file__).parent / "www" / "solar-mask-card.js"),
+                cache_headers=False,
+            )
+        ]
+    )
+    add_extra_js_url(hass, CARD_URL)
+
     if DOMAIN not in config:
         return True
 

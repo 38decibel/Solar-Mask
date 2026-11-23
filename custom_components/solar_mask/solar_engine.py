@@ -95,6 +95,45 @@ def _datetime_to_julian(dt: datetime) -> float:
     return jdn + (dt.hour - 12) / 24.0 + dt.minute / 1440.0 + dt.second / 86400.0
 
 
+def parse_mask_data(content: str) -> list[tuple[float, float]]:
+    """Parse CSV or HOR horizon data into sorted azimuth/elevation pairs."""
+    lines = [line.strip() for line in content.splitlines() if line.strip()]
+    data_lines = [line for line in lines if not line.startswith("#")]
+    if not data_lines:
+        raise ValueError("Mask data contains no points")
+
+    azimuths: list[float] = []
+    elevations: list[float] = []
+    if "," in data_lines[0]:
+        reader = csv.DictReader(io.StringIO("\n".join(data_lines)))
+        for row in reader:
+            keys = list(row)
+            if len(keys) < 2:
+                continue
+            try:
+                azimuth = row.get("azimuth") or row.get("Azimuth") or row[keys[0]]
+                elevation = row.get("elevation") or row.get("Elevation") or row[keys[1]]
+                azimuths.append(float(azimuth) % 360)
+                elevations.append(float(elevation))
+            except (TypeError, ValueError, KeyError):
+                continue
+    else:
+        for line in data_lines:
+            parts = line.split()
+            if len(parts) < 2:
+                continue
+            try:
+                azimuths.append(float(parts[0]) % 360)
+                elevations.append(float(parts[1]))
+            except ValueError:
+                continue
+
+    if not azimuths:
+        raise ValueError("No valid azimuth/elevation pairs found")
+
+    return sorted(zip(azimuths, elevations), key=lambda point: point[0])
+
+
 class SolarMask:
     """Represents a horizon mask and provides sun visibility computations.
 
@@ -103,71 +142,48 @@ class SolarMask:
         await hass.async_add_executor_job(mask.load)
     """
 
-    def __init__(self, mask_file: str, latitude: float, longitude: float, name: str = ""):
+    def __init__(
+        self,
+        mask_file: str | None,
+        latitude: float,
+        longitude: float,
+        name: str = "",
+        mask_data: str | None = None,
+    ):
         self.name = name
         self.latitude = latitude
         self.longitude = longitude
         self._mask_file = mask_file
+        self._mask_data = mask_data
         self._azimuths: list[float] = []
         self._elevations: list[float] = []
 
     def load(self) -> None:
-        """Load the mask file synchronously. Always call via executor_job."""
+        """Load the mask data synchronously. Always call via executor_job."""
         self._load_mask()
 
     def _load_mask(self) -> None:
-        """Parse CSV or HOR horizon mask file."""
-        path = Path(self._mask_file)
-        azimuths: list[float] = []
-        elevations: list[float] = []
-
+        """Load and parse the configured horizon data."""
         try:
-            with open(path, "r", encoding="utf-8") as f:
-                content = f.read().strip()
-
-            lines = [l.strip() for l in content.splitlines() if l.strip()]
-            data_lines = [l for l in lines if not l.startswith("#")]
-
-            if not data_lines:
-                raise ValueError("Mask file contains no data")
-
-            first = data_lines[0]
-            if "," in first:
-                # CSV format
-                reader = csv.DictReader(io.StringIO("\n".join(data_lines)))
-                for row in reader:
-                    keys = list(row.keys())
-                    try:
-                        az = float(row.get("azimuth", row.get("Azimuth", row[keys[0]])))
-                        el = float(row.get("elevation", row.get("Elevation", row[keys[1]])))
-                        azimuths.append(az % 360)
-                        elevations.append(el)
-                    except (ValueError, KeyError):
-                        continue
+            if self._mask_data is not None:
+                content = self._mask_data
+                source = "configured data"
+            elif self._mask_file is not None:
+                content = Path(self._mask_file).read_text(encoding="utf-8")
+                source = self._mask_file
             else:
-                # HOR / space-separated format
-                for line in data_lines:
-                    parts = line.split()
-                    if len(parts) >= 2:
-                        try:
-                            azimuths.append(float(parts[0]) % 360)
-                            elevations.append(float(parts[1]))
-                        except ValueError:
-                            continue
+                raise ValueError("No horizon data configured")
 
-            if not azimuths:
-                raise ValueError("No valid azimuth/elevation pairs found")
-
-            paired = sorted(zip(azimuths, elevations), key=lambda x: x[0])
+            paired = parse_mask_data(content)
             self._azimuths = [p[0] for p in paired]
             self._elevations = [p[1] for p in paired]
 
             _LOGGER.info(
                 "[solar_mask] Zone '%s': loaded %d mask points from %s",
-                self.name, len(self._azimuths), self._mask_file,
+                self.name, len(self._azimuths), source,
             )
 
-        except Exception as e:
+        except (OSError, UnicodeError, ValueError) as e:
             _LOGGER.error("[solar_mask] Failed to load mask for '%s': %s", self.name, e)
             self._azimuths = [0.0, 360.0]
             self._elevations = [0.0, 0.0]
